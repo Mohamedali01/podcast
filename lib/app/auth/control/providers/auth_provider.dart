@@ -11,10 +11,7 @@ class AuthProvider with ChangeNotifier {
 
   final _auth = FirebaseAuth.instance;
 
-
-
   // Ui handling
-
 
   void pressedRemember() {
     isRememberMe = !isRememberMe;
@@ -31,10 +28,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   // firebase Handling
-
 
   bool get isLogin {
     User? user = _auth.currentUser;

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:podcast_app/app/auth/view/login_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'auth/control/providers/auth_provider.dart';
-import 'home/view/home_screen.dart';
+import '../control/providers/auth_provider.dart';
+import '../../home/view/home_screen.dart';
 
 class ControlScreen extends StatelessWidget {
   const ControlScreen({Key? key}) : super(key: key);

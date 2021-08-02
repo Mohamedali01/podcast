@@ -9,6 +9,8 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  google_sign_in: ^5.0.5
+  flutter_facebook_login: ^3.0.0
   fluttertoast: ^8.0.8
   firebase_core: ^1.4.0
   cloud_firestore: ^2.4.0
@@ -61,4 +63,3 @@ flutter:
           weight: 400
         - asset: assets/fonts/CircularStd-Medium.ttf
           weight: 600
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/google_login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/sign_up_provider.dart';
 import 'package:podcast_app/constants.dart';
 import 'package:podcast_app/app/core/size_config.dart';
@@ -53,12 +54,20 @@ class SignUpScreen extends StatelessWidget {
                   SizedBox(
                     height: defaultSize * 1.5,
                   ),
-                  buildSocialButton(
-                      text: 'Continue with Google',
-                      backgroundColor: Colors.white,
-                      defaultSize: defaultSize,
-                      image: 'assets/images/google.svg',
-                      textColor: Colors.black),
+                  Consumer<GoogleLoginProvider>(
+                    builder: (context, provider, _) {
+                      return buildSocialButton(
+                        text: 'Continue with Google',
+                        backgroundColor: Colors.white,
+                        defaultSize: defaultSize,
+                        image: 'assets/images/google.svg',
+                        textColor: Colors.black,
+                        onPressed: () async {
+                          await provider.googleLogin();
+                        },
+                      );
+                    },
+                  ),
                   SizedBox(
                     height: defaultSize * 2,
                   ),
@@ -251,8 +260,10 @@ class SignUpScreen extends StatelessWidget {
       String? text,
       Color? backgroundColor,
       Color? textColor,
-      Color? imageColor}) {
+      Color? imageColor,
+      void Function()? onPressed}) {
     return CustomRoundedButton(
+      onPressed: onPressed,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

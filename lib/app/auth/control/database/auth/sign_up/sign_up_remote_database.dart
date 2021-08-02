@@ -10,7 +10,21 @@ class SignUpRemoteDatabase {
       await _cloud.collection("users").doc(userId).set(userModel.toJson());
     } on Exception catch (e) {
       buildSnackBar('Error!', 'Error while registering');
-      print('SignUpRemoteDatabase error: ${e.toString()}');
+      print(
+          'SignUpRemoteDatabase  saveUserDataRemotely error: ${e.toString()}');
+    }
+  }
+
+  static Future<UserModel?> getUserDataRemotely(String uid) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _cloud.collection("users").doc(uid).get();
+      Map<dynamic, dynamic> map =
+          documentSnapshot.data() as Map<dynamic, dynamic>;
+      return UserModel.fromJson(map);
+    } on Exception catch (e) {
+      buildSnackBar('Error!', 'Error while registering');
+      print('SignUpRemoteDatabase getUserDataRemotely error: ${e.toString()}');
     }
   }
 }

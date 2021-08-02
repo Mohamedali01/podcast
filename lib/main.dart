@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/google_login_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/login_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/logout_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/sign_up_provider.dart';
-import 'package:podcast_app/app/control_screen.dart';
+import 'package:podcast_app/app/auth/view/control_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() async{
@@ -26,6 +29,16 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (_) => SignUpProvider(),
           ),
+          ChangeNotifierProvider(
+            create: (_) => LoginProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => LogoutProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => GoogleLoginProvider(),
+          ),
+
 
         ],
         child: GetMaterialApp(

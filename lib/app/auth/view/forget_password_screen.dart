@@ -82,7 +82,9 @@ class ForgetPasswordScreen extends StatelessWidget {
           size: defaultSize * 2.5,
           color: Color(kPrimaryColor),
         ),
-      ), onSaved: (value){}, validator: (value){},
+      ),
+      onSaved: (value) {},
+      validator: (value) {},
     );
   }
 

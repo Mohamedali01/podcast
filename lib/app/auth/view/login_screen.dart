@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/google_login_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/login_provider.dart';
 import 'package:podcast_app/app/auth/view/forget_password_screen.dart';
 import 'package:podcast_app/app/auth/view/sign_up.dart';
 import 'package:podcast_app/constants.dart';
@@ -12,78 +14,94 @@ import 'package:podcast_app/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<GoogleLoginProvider>(context);
     SizeConfig().init(context);
     final defaultSize = SizeConfig.defaultSize;
     return Scaffold(
       // appBar: buildAppBar(),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: defaultSize * 7,
+        child: provider.isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFFB6580),
                 ),
-                buildCenterImage(defaultSize),
-                SizedBox(
-                  height: defaultSize * 2.2,
+              )
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: defaultSize * 7,
+                        ),
+                        buildCenterImage(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 2.2,
+                        ),
+                        buildCenterTexts(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 2.4,
+                        ),
+                        buildTextFormFields(defaultSize),
+                        SizedBox(
+                          height: defaultSize,
+                        ),
+                        buildRememberAndForget(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 2.5,
+                        ),
+                        buildLoginButton(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 1.5,
+                        ),
+                        CustomText(
+                          'OR',
+                          color: Color(kTextColor),
+                        ),
+                        SizedBox(
+                          height: defaultSize * 1.5,
+                        ),
+                        Consumer<GoogleLoginProvider>(
+                            builder: (context, provider, _) {
+                          return buildSocialButton(
+                              text: 'Continue with Google',
+                              onPressed: () async {
+                                await provider.googleLogin();
+                              },
+                              backgroundColor: Colors.white,
+                              defaultSize: defaultSize,
+                              image: 'assets/images/google.svg',
+                              textColor: Colors.black);
+                        }),
+                        SizedBox(
+                          height: defaultSize * 2,
+                        ),
+                        buildSocialButton(
+                            text: 'Continue with Facebook',
+                            backgroundColor: Color(0xff39579A),
+                            defaultSize: defaultSize,
+                            image: 'assets/images/facebook.svg',
+                            textColor: Colors.white,
+                            imageColor: Colors.white),
+                        SizedBox(
+                          height: defaultSize * 2,
+                        ),
+                        buildDontHaveAccountText(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 8,
+                        ),
+                        buildTermsOfServiceText(defaultSize)
+                      ],
+                    ),
+                  ),
                 ),
-                buildCenterTexts(defaultSize),
-                SizedBox(
-                  height: defaultSize * 2.4,
-                ),
-                buildTextFormFields(defaultSize),
-                SizedBox(
-                  height: defaultSize,
-                ),
-                buildRememberAndForget(defaultSize),
-                SizedBox(
-                  height: defaultSize * 2.5,
-                ),
-                buildLoginButton(defaultSize),
-                SizedBox(
-                  height: defaultSize * 1.5,
-                ),
-                CustomText(
-                  'OR',
-                  color: Color(kTextColor),
-                ),
-                SizedBox(
-                  height: defaultSize * 1.5,
-                ),
-                buildSocialButton(
-                    text: 'Continue with Google',
-                    backgroundColor: Colors.white,
-                    defaultSize: defaultSize,
-                    image: 'assets/images/google.svg',
-                    textColor: Colors.black),
-                SizedBox(
-                  height: defaultSize * 2,
-                ),
-                buildSocialButton(
-                    text: 'Continue with Facebook',
-                    backgroundColor: Color(0xff39579A),
-                    defaultSize: defaultSize,
-                    image: 'assets/images/facebook.svg',
-                    textColor: Colors.white,
-                    imageColor: Colors.white),
-                SizedBox(
-                  height: defaultSize * 2,
-                ),
-                buildDontHaveAccountText(defaultSize),
-                SizedBox(
-                  height: defaultSize * 8,
-                ),
-                buildTermsOfServiceText(defaultSize)
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -144,8 +162,10 @@ class LoginScreen extends StatelessWidget {
       String? text,
       Color? backgroundColor,
       Color? textColor,
-      Color? imageColor}) {
+      Color? imageColor,
+      void Function()? onPressed}) {
     return CustomRoundedButton(
+      onPressed: onPressed,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -172,19 +192,33 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  CustomRoundedButton buildLoginButton(double defaultSize) {
-    return CustomRoundedButton(
-      child: Center(
-        child: CustomText(
-          'Log In',
-          color: Colors.white,
-          fontSize: defaultSize * 2.2,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      color: Color(0xffF11775),
-      width: double.infinity,
-      height: defaultSize * 5.7,
+  Widget buildLoginButton(double defaultSize) {
+    return Consumer<LoginProvider>(
+      builder: (context, provider, _) {
+        return CustomRoundedButton(
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              await provider.login(email, password);
+            }
+          },
+          child: Center(
+            child: provider.isLoading
+                ? CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : CustomText(
+                    'Log In',
+                    color: Colors.white,
+                    fontSize: defaultSize * 2.2,
+                    fontWeight: FontWeight.w600,
+                  ),
+          ),
+          color: Color(0xffF11775),
+          width: double.infinity,
+          height: defaultSize * 5.7,
+        );
+      },
     );
   }
 
@@ -246,7 +280,15 @@ class LoginScreen extends StatelessWidget {
         return Column(
           children: [
             CustomRoundedTextFormField(
-              onSaved: (value){}, validator: (value){},
+              onSaved: (String? value) {
+                email = value!;
+              },
+              validator: (String? value) {
+                if (value!.isEmpty) return 'Please enter the email';
+                if (!value.contains('@') || !value.contains('.'))
+                  return 'Enter the right email';
+                return null;
+              },
               color: kSecondColor,
               width: double.infinity,
               radius: 10,
@@ -266,7 +308,14 @@ class LoginScreen extends StatelessWidget {
               height: defaultSize * 1.5,
             ),
             CustomRoundedTextFormField(
-              onSaved: (value){}, validator: (value){},
+              onSaved: (String? value) {
+                password = value!;
+              },
+              validator: (String? value) {
+                if (value!.isEmpty) return 'Please enter the password';
+                if (value.length < 5) return 'Password is too short';
+                return null;
+              },
               color: kSecondColor,
               width: double.infinity,
               radius: 15,
