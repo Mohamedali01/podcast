@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/facebook_login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/google_login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/sign_up_provider.dart';
 import 'package:podcast_app/constants.dart';
@@ -18,76 +19,86 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final defaultSize = SizeConfig.defaultSize;
+    final _googleProvider = Provider.of<GoogleLoginProvider>(context);
+    final _facebookProvider = Provider.of<FacebookLoginProvider>(context);
     return Scaffold(
-      // appBar: buildAppBar(),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 30, right: 30),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: defaultSize * 7,
+      body: (_googleProvider.isLoading || _facebookProvider.isLoading)
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFFFB6580),
+              ),
+            )
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 30, right: 30),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: defaultSize * 7,
+                        ),
+                        buildCenterTexts(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 3.5,
+                        ),
+                        buildTextFormFields(defaultSize),
+                        SizedBox(
+                          height: defaultSize,
+                        ),
+                        buildReceiveEmailsText(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 2.5,
+                        ),
+                        buildSignUpButton(defaultSize),
+                        SizedBox(
+                          height: defaultSize * 1.5,
+                        ),
+                        CustomText(
+                          'OR',
+                          color: Color(kTextColor),
+                        ),
+                        SizedBox(
+                          height: defaultSize * 1.5,
+                        ),
+                        Consumer<GoogleLoginProvider>(
+                          builder: (context, provider, _) {
+                            return buildSocialButton(
+                              text: 'Continue with Google',
+                              backgroundColor: Colors.white,
+                              defaultSize: defaultSize,
+                              image: 'assets/images/google.svg',
+                              textColor: Colors.black,
+                              onPressed: () async {
+                                await provider.googleLogin();
+                              },
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: defaultSize * 2,
+                        ),
+                        buildSocialButton(
+                            onPressed: () async {
+                              await _facebookProvider.facebookLogin();
+                            },
+                            text: 'Continue with Facebook',
+                            backgroundColor: Color(0xff39579A),
+                            defaultSize: defaultSize,
+                            image: 'assets/images/facebook.svg',
+                            textColor: Colors.white,
+                            imageColor: Colors.white),
+                        SizedBox(
+                          height: defaultSize * 5,
+                        ),
+                        buildDontHaveAccountText(defaultSize),
+                      ],
+                    ),
                   ),
-                  buildCenterTexts(defaultSize),
-                  SizedBox(
-                    height: defaultSize * 3.5,
-                  ),
-                  buildTextFormFields(defaultSize),
-                  SizedBox(
-                    height: defaultSize,
-                  ),
-                  buildReceiveEmailsText(defaultSize),
-                  SizedBox(
-                    height: defaultSize * 2.5,
-                  ),
-                  buildSignUpButton(defaultSize),
-                  SizedBox(
-                    height: defaultSize * 1.5,
-                  ),
-                  CustomText(
-                    'OR',
-                    color: Color(kTextColor),
-                  ),
-                  SizedBox(
-                    height: defaultSize * 1.5,
-                  ),
-                  Consumer<GoogleLoginProvider>(
-                    builder: (context, provider, _) {
-                      return buildSocialButton(
-                        text: 'Continue with Google',
-                        backgroundColor: Colors.white,
-                        defaultSize: defaultSize,
-                        image: 'assets/images/google.svg',
-                        textColor: Colors.black,
-                        onPressed: () async {
-                          await provider.googleLogin();
-                        },
-                      );
-                    },
-                  ),
-                  SizedBox(
-                    height: defaultSize * 2,
-                  ),
-                  buildSocialButton(
-                      text: 'Continue with Facebook',
-                      backgroundColor: Color(0xff39579A),
-                      defaultSize: defaultSize,
-                      image: 'assets/images/facebook.svg',
-                      textColor: Colors.white,
-                      imageColor: Colors.white),
-                  SizedBox(
-                    height: defaultSize * 5,
-                  ),
-                  buildDontHaveAccountText(defaultSize),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

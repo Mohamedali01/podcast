@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/facebook_login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/google_login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/login_provider.dart';
 import 'package:podcast_app/app/auth/view/forget_password_screen.dart';
@@ -21,10 +22,11 @@ class LoginScreen extends StatelessWidget {
     final provider = Provider.of<GoogleLoginProvider>(context);
     SizeConfig().init(context);
     final defaultSize = SizeConfig.defaultSize;
+    final _facebookProvider = Provider.of<FacebookLoginProvider>(context);
     return Scaffold(
       // appBar: buildAppBar(),
       body: SafeArea(
-        child: provider.isLoading
+        child: (provider.isLoading || _facebookProvider.isLoading)
             ? Center(
                 child: CircularProgressIndicator(
                   color: Color(0xFFFB6580),
@@ -72,7 +74,7 @@ class LoginScreen extends StatelessWidget {
                           return buildSocialButton(
                               text: 'Continue with Google',
                               onPressed: () async {
-                                await provider.googleLogin();
+                                await provider.googleLogin(isLogin: true);
                               },
                               backgroundColor: Colors.white,
                               defaultSize: defaultSize,
@@ -83,6 +85,10 @@ class LoginScreen extends StatelessWidget {
                           height: defaultSize * 2,
                         ),
                         buildSocialButton(
+                            onPressed: () async {
+                              await _facebookProvider.facebookLogin(
+                                  isLogin: true);
+                            },
                             text: 'Continue with Facebook',
                             backgroundColor: Color(0xff39579A),
                             defaultSize: defaultSize,

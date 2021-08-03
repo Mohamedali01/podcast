@@ -1,58 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:podcast_app/app/auth/control/providers/forget_password_provider.dart';
 import 'package:podcast_app/app/auth/view/login_screen.dart';
 import 'package:podcast_app/app/core/size_config.dart';
 import 'package:podcast_app/constants.dart';
 import 'package:podcast_app/widgets/custom_rounded_button.dart';
 import 'package:podcast_app/widgets/custom_rounded_text_form_field.dart';
 import 'package:podcast_app/widgets/custom_text.dart';
+import 'package:provider/provider.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final defaultSize = SizeConfig.defaultSize;
+    final provider = Provider.of<ForgetPasswordProvider>(context);
     return Scaffold(
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    buildTexts(defaultSize),
-                    SizedBox(
-                      height: defaultSize * 4,
+        child: provider.isLoading
+            ? CircularProgressIndicator(
+                color: Color(0xffF11775),
+              )
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            buildTexts(defaultSize),
+                            SizedBox(
+                              height: defaultSize * 4,
+                            ),
+                            buildTextFormField(defaultSize),
+                            SizedBox(
+                              height: defaultSize * 3,
+                            ),
+                            buildSendPasswordButton(defaultSize, provider),
+                            SizedBox(
+                              height: defaultSize * 20,
+                            ),
+                          ],
+                        ),
+                        Container(),
+                        Container(),
+                        Container(),
+                        buildDontHaveAccountText(
+                          defaultSize: defaultSize,
+                          onTap: () {
+                            Get.offAll(LoginScreen());
+                          },
+                        ),
+                      ],
                     ),
-                    buildTextFormField(defaultSize),
-                    SizedBox(
-                      height: defaultSize * 3,
-                    ),
-                    buildSendPasswordButton(defaultSize),
-                    // SizedBox(
-                    //   height: defaultSize * 20,
-                    // ),
-                  ],
+                  ),
                 ),
-                buildDontHaveAccountText(
-                  defaultSize: defaultSize,
-                  onTap: () {
-                    Get.offAll(LoginScreen());
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
 
-  CustomRoundedButton buildSendPasswordButton(double defaultSize) {
+  CustomRoundedButton buildSendPasswordButton(
+      double defaultSize, ForgetPasswordProvider forgetPasswordProvider) {
     return CustomRoundedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+          forgetPasswordProvider.resetPassword(email);
+        }
+      },
       child: Center(
         child: CustomText(
           'Send Password Reset',
@@ -83,8 +105,15 @@ class ForgetPasswordScreen extends StatelessWidget {
           color: Color(kPrimaryColor),
         ),
       ),
-      onSaved: (value) {},
-      validator: (value) {},
+      onSaved: (String? value) {
+        email = value!;
+      },
+      validator: (String? value) {
+        if (value!.isEmpty) return 'Please enter the email';
+        if (!value.contains('@') || !value.contains('.'))
+          return 'Enter the right email';
+        return null;
+      },
     );
   }
 

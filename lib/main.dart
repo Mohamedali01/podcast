@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/facebook_login_provider.dart';
+import 'package:podcast_app/app/auth/control/providers/forget_password_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/google_login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/login_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/logout_provider.dart';
@@ -10,7 +12,7 @@ import 'package:podcast_app/app/auth/control/providers/sign_up_provider.dart';
 import 'package:podcast_app/app/auth/view/control_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -38,8 +40,12 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (_) => GoogleLoginProvider(),
           ),
-
-
+          ChangeNotifierProvider(
+            create: (_) => FacebookLoginProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => ForgetPasswordProvider(),
+          ),
         ],
         child: GetMaterialApp(
           theme:

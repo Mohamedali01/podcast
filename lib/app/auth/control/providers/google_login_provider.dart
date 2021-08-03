@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:podcast_app/app/auth/control/database/auth/sign_up/sign_up_local_database.dart';
@@ -15,7 +16,7 @@ class GoogleLoginProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<void> googleLogin() async {
+  Future<void> googleLogin({bool isLogin = false}) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -40,6 +41,8 @@ class GoogleLoginProvider with ChangeNotifier {
           _isLoading = false;
           notifyListeners();
           Get.offAll(HomeScreen());
+          Fluttertoast.showToast(
+              msg: '${(isLogin ? 'Logged in' : 'Signed up')} successfully');
         },
       );
     } on Exception catch (e) {
