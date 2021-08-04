@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:podcast_app/app/auth/control/providers/auth_provider.dart';
 import 'package:podcast_app/app/auth/control/providers/facebook_login_provider.dart';
@@ -21,9 +20,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(375, 812),
-      builder: () => MultiProvider(
+    return  MultiProvider(
         providers: [
           ChangeNotifierProvider(
             create: (_) => AuthProvider(),
@@ -53,7 +50,6 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           home: ControlScreen(),
         ),
-      ),
     );
   }
 }

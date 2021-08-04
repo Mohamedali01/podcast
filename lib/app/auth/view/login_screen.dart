@@ -7,6 +7,7 @@ import 'package:podcast_app/app/auth/control/providers/google_login_provider.dar
 import 'package:podcast_app/app/auth/control/providers/login_provider.dart';
 import 'package:podcast_app/app/auth/view/forget_password_screen.dart';
 import 'package:podcast_app/app/auth/view/sign_up.dart';
+import 'package:podcast_app/app/auth/view/terms_screen.dart';
 import 'package:podcast_app/constants.dart';
 import 'package:podcast_app/app/core/size_config.dart';
 import 'package:podcast_app/widgets/custom_rounded_button.dart';
@@ -128,10 +129,13 @@ class LoginScreen extends StatelessWidget {
               color: Color(kTextColor),
               fontSize: defaultSize,
             ),
-            CustomText(
-              'Terms of Service',
-              color: Color(0xFFFB6580),
-              fontSize: defaultSize * 1,
+            InkWell(
+              onTap: ()=>Get.to(TermsScreen()),
+              child: CustomText(
+                'Terms of Service',
+                color: Color(0xFFFB6580),
+                fontSize: defaultSize * 1,
+              ),
             ),
           ],
         ),

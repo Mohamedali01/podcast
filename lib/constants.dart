@@ -11,6 +11,12 @@ String name = '';
 String userId = '';
 
 buildSnackBar(String title, String text) {
-  Get.snackbar(title, text,
-      backgroundColor: Colors.red, duration: Duration(seconds: 2));
+  Get.snackbar(
+    title,
+    text,
+    backgroundColor: Colors.red,
+    duration: Duration(
+      seconds: 2,
+    ),
+  );
 }
